@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="RateForge helps freelancers calculate the hourly rate their business actually needs using income goals, taxes, expenses, and billable hours." />
+  <title>RateForge | Freelance Hourly Rate Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow"><span aria-hidden="true">✦</span> RateForge</p>
+      <h1 id="page-title">Find the hourly rate<br><em>your freelance business needs.</em></h1>
+      <p class="hero-copy">Stop guessing what to charge. Calculate the hourly rate you need based on your income goal, taxes, expenses, and actual billable hours.</p>
+    </section>
+
+    <section class="calculator" aria-label="Freelance rate calculator">
+      <div class="input-panel">
+        <div class="section-heading">
+          <p class="step">01 / Your year</p>
+          <h2>Set the foundation</h2>
+          <p>Start with the income you want to keep after tax and a realistic estimate of the time you can invoice.</p>
+        </div>
+
+        <form id="calculator-form" novalidate>
+          <div class="field-grid">
+            <label class="field field-wide" for="income">
+              <span>Desired annual take-home income</span>
+              <span class="input-wrap currency"><span>$</span><input id="income" name="income" type="number" value="85000" min="0" step="0.01" inputmode="decimal" /></span>
+            </label>
+            <label class="field" for="hours">
+              <span>Working hours per week</span>
+              <span class="input-wrap"><input id="hours" name="hours" type="number" value="40" min="0" max="168" step="0.1" inputmode="decimal" /><small>hrs</small></span>
+            </label>
+            <label class="field" for="weeks-off">
+              <span>Weeks off per year</span>
+              <span class="input-wrap"><input id="weeks-off" name="weeksOff" type="number" value="4" min="0" max="52" step="0.1" inputmode="decimal" /><small>wks</small></span>
+            </label>
+            <label class="field" for="tax-rate">
+              <span>Effective tax rate on profit</span>
+              <span class="input-wrap"><input id="tax-rate" name="taxRate" type="number" value="30" min="0" max="100" step="0.01" inputmode="decimal" /><small>%</small></span>
+            </label>
+            <label class="field" for="expenses">
+              <span>Annual deductible business expenses</span>
+              <span class="input-wrap currency"><span>$</span><input id="expenses" name="expenses" type="number" value="8000" min="0" step="500" inputmode="decimal" /></span>
+            </label>
+            <label class="field field-wide" for="billable">
+              <span class="range-label">Billable working hours <strong id="billable-value">65%</strong></span>
+              <input id="billable" name="billable" type="range" value="65" min="0" max="100" step="1" />
+              <span class="range-hint">Time spent on client work, excluding admin, marketing, sales, and learning.</span>
+            </label>
+            <label class="field field-wide" for="buffer">
+              <span class="range-label">Resilience buffer <strong id="buffer-value">15%</strong></span>
+              <input id="buffer" name="buffer" type="range" value="15" min="0" max="100" step="1" />
+              <span class="range-hint">An optional cushion for slow periods, scope changes, unpaid time, and business growth. It is added above your minimum rate.</span>
+            </label>
+          </div>
+          <p id="form-error" class="form-error" role="alert" hidden></p>
+          <button class="reset-button" type="button" id="reset">Restore example values <span aria-hidden="true">↺</span></button>
+        </form>
+      </div>
+
+      <aside class="results-panel" aria-live="polite">
+        <div class="result-content" id="result-content">
+        <div class="result-header">
+          <p class="step">02 / Your numbers</p>
+          <p class="result-caption">Based on <span id="billable-hours">1,248</span> billable hours a year</p>
+        </div>
+
+        <div class="primary-result">
+          <p>Recommended client-facing rate</p>
+          <strong id="recommended-rate">$0</strong><span>/hr</span>
+          <div class="recommendation-note"><span aria-hidden="true">↗</span> Includes your <span id="buffer-note">15%</span> resilience buffer</div>
+          <p class="result-warning" id="result-warning" hidden></p>
+        </div>
+
+        <div class="secondary-results">
+          <div class="metric">
+            <span>Minimum hourly rate</span>
+            <strong id="minimum-rate">$0/hr</strong>
+            <small>Covers income, tax, and expenses</small>
+          </div>
+          <div class="metric">
+            <span>Recommended monthly revenue</span>
+            <strong id="monthly-revenue">$0</strong>
+            <small>At the recommended rate</small>
+          </div>
+        </div>
+
+        <div class="formula">
+          <p class="formula-title">How your minimum is calculated</p>
+          <p><span>Income grossed up for tax</span><strong id="income-gross-up">$0</strong></p>
+          <p><span>+ Deductible expenses</span><strong id="expense-total">$0</strong></p>
+          <p><span>= Minimum annual revenue</span><strong id="revenue-needed">$0</strong></p>
+          <p><span>÷ Billable hours</span><strong id="formula-hours">0 hrs</strong></p>
+          <p class="formula-total"><span>Minimum rate</span><strong id="formula-rate">$0/hr</strong></p>
+          <p class="formula-explanation">Taxes are estimated on profit: revenue after deductible expenses. The minimum rate covers your inputs; the recommended rate adds the adjustable buffer above it.</p>
+        </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="guide" aria-labelledby="guide-title">
+      <div>
+        <p class="step">03 / Make it work</p>
+        <h2 id="guide-title">A rate is more than a number.</h2>
+      </div>
+      <div class="guide-items">
+        <article><span>01</span><h3>Minimum means sustainable</h3><p>Your minimum rate is the break-even hourly rate needed to cover your income goal, estimated tax, and deductible business costs.</p></article>
+        <article><span>02</span><h3>Buffer means flexibility</h3><p>Your recommended rate layers a chosen cushion on top of the minimum for lean months, unpaid work, and reinvestment.</p></article>
+        <article><span>03</span><h3>Use this as a planning tool</h3><p>Tax treatment varies by location and business structure. Revisit the inputs with a qualified tax professional as your work changes.</p></article>
+      </div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
