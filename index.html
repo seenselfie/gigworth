@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="RateForge helps freelancers calculate the hourly rate their business actually needs using income goals, taxes, expenses, and billable hours." />
-  <title>RateForge | Freelance Hourly Rate Calculator</title>
+  <meta name="description" content="Calculate what a freelance project really pays per hour after fees, expenses, taxes, revisions, and admin time." />
+  <title>GigWorth — Freelance Project Worth Calculator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -13,51 +13,29 @@
 <body>
   <main class="page-shell">
     <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow"><span aria-hidden="true">✦</span> RateForge</p>
-      <h1 id="page-title">Find the hourly rate<br><em>your freelance business needs.</em></h1>
-      <p class="hero-copy">Stop guessing what to charge. Calculate the hourly rate you need based on your income goal, taxes, expenses, and actual billable hours.</p>
+      <p class="eyebrow"><span aria-hidden="true">✦</span> GigWorth</p>
+      <h1 id="page-title">Is this freelance project<br><em>actually worth your time?</em></h1>
+      <p class="hero-copy">See your real hourly earnings after fees, expenses, taxes, revisions, and admin time.</p>
+      <a class="hero-cta" href="#calculator">Check a project <span aria-hidden="true">↓</span></a>
     </section>
 
-    <section class="calculator" aria-label="Freelance rate calculator">
+    <section class="calculator" id="calculator" aria-label="GigWorth project calculator">
       <div class="input-panel">
         <div class="section-heading">
-          <p class="step">01 / Your year</p>
-          <h2>Set the foundation</h2>
-          <p>Start with the income you want to keep after tax and a realistic estimate of the time you can invoice.</p>
+          <p class="step">01 / The project</p>
+          <h2>Put the full scope on the table.</h2>
+          <p>Include the time and costs that are easy to overlook before you accept a gig.</p>
         </div>
-
         <form id="calculator-form" novalidate>
           <div class="field-grid">
-            <label class="field field-wide" for="income">
-              <span>Desired annual take-home income</span>
-              <span class="input-wrap currency"><span>$</span><input id="income" name="income" type="number" value="85000" min="0" step="0.01" inputmode="decimal" /></span>
-            </label>
-            <label class="field" for="hours">
-              <span>Working hours per week</span>
-              <span class="input-wrap"><input id="hours" name="hours" type="number" value="40" min="0" max="168" step="0.1" inputmode="decimal" /><small>hrs</small></span>
-            </label>
-            <label class="field" for="weeks-off">
-              <span>Weeks off per year</span>
-              <span class="input-wrap"><input id="weeks-off" name="weeksOff" type="number" value="4" min="0" max="52" step="0.1" inputmode="decimal" /><small>wks</small></span>
-            </label>
-            <label class="field" for="tax-rate">
-              <span>Effective tax rate on profit</span>
-              <span class="input-wrap"><input id="tax-rate" name="taxRate" type="number" value="30" min="0" max="100" step="0.01" inputmode="decimal" /><small>%</small></span>
-            </label>
-            <label class="field" for="expenses">
-              <span>Annual deductible business expenses</span>
-              <span class="input-wrap currency"><span>$</span><input id="expenses" name="expenses" type="number" value="8000" min="0" step="500" inputmode="decimal" /></span>
-            </label>
-            <label class="field field-wide" for="billable">
-              <span class="range-label">Billable working hours <strong id="billable-value">65%</strong></span>
-              <input id="billable" name="billable" type="range" value="65" min="0" max="100" step="1" />
-              <span class="range-hint">Time spent on client work, excluding admin, marketing, sales, and learning.</span>
-            </label>
-            <label class="field field-wide" for="buffer">
-              <span class="range-label">Resilience buffer <strong id="buffer-value">15%</strong></span>
-              <input id="buffer" name="buffer" type="range" value="15" min="0" max="100" step="1" />
-              <span class="range-hint">An optional cushion for slow periods, scope changes, unpaid time, and business growth. It is added above your minimum rate.</span>
-            </label>
+            <label class="field field-wide" for="payment"><span>Project payment</span><span class="input-wrap currency"><span>$</span><input id="payment" type="number" value="1000" min="0" step="0.01" inputmode="decimal" /></span></label>
+            <label class="field" for="main-hours"><span>Main work hours</span><span class="input-wrap"><input id="main-hours" type="number" value="10" min="0" step="0.1" inputmode="decimal" /><small>hrs</small></span></label>
+            <label class="field" for="admin-hours"><span>Meetings / admin hours</span><span class="input-wrap"><input id="admin-hours" type="number" value="2" min="0" step="0.1" inputmode="decimal" /><small>hrs</small></span></label>
+            <label class="field" for="revision-hours"><span>Expected revision hours</span><span class="input-wrap"><input id="revision-hours" type="number" value="3" min="0" step="0.1" inputmode="decimal" /><small>hrs</small></span></label>
+            <label class="field" for="fee-rate"><span>Platform / payment fee</span><span class="input-wrap"><input id="fee-rate" type="number" value="3" min="0" max="100" step="0.01" inputmode="decimal" /><small>%</small></span><span class="field-hint">Upwork, Fiverr, or payment processor fees.</span></label>
+            <label class="field" for="expenses"><span>Project-specific expenses</span><span class="input-wrap currency"><span>$</span><input id="expenses" type="number" value="50" min="0" step="0.01" inputmode="decimal" /></span><span class="field-hint">Travel, assets, materials, or subcontracting.</span></label>
+            <label class="field" for="tax-rate"><span>Estimated tax rate</span><span class="input-wrap"><input id="tax-rate" type="number" value="25" min="0" max="100" step="0.01" inputmode="decimal" /><small>%</small></span><span class="field-hint">A planning estimate, not tax advice.</span></label>
+            <label class="field" for="target-rate"><span>Your target hourly rate</span><span class="input-wrap currency"><span>$</span><input id="target-rate" type="number" value="40" min="0" step="0.01" inputmode="decimal" /><small>/hr</small></span><span class="field-hint">Your personal minimum acceptable rate.</span></label>
           </div>
           <p id="form-error" class="form-error" role="alert" hidden></p>
           <button class="reset-button" type="button" id="reset">Restore example values <span aria-hidden="true">↺</span></button>
@@ -65,56 +43,50 @@
       </div>
 
       <aside class="results-panel" aria-live="polite">
-        <div class="result-content" id="result-content">
-        <div class="result-header">
-          <p class="step">02 / Your numbers</p>
-          <p class="result-caption">Based on <span id="billable-hours">1,248</span> billable hours a year</p>
-        </div>
-
-        <div class="primary-result">
-          <p>Recommended client-facing rate</p>
-          <strong id="recommended-rate">$0</strong><span>/hr</span>
-          <div class="recommendation-note"><span aria-hidden="true">↗</span> Includes your <span id="buffer-note">15%</span> resilience buffer</div>
-          <p class="result-warning" id="result-warning" hidden></p>
-        </div>
-
-        <div class="secondary-results">
-          <div class="metric">
-            <span>Minimum hourly rate</span>
-            <strong id="minimum-rate">$0/hr</strong>
-            <small>Covers income, tax, and expenses</small>
+        <div class="result-content">
+          <div class="result-header"><p class="step">02 / Your actual return</p><p class="result-caption">Across <span id="total-hours">15</span> total hours</p></div>
+          <div class="primary-result">
+            <p id="primary-label">Your real hourly rate</p>
+            <strong id="effective-rate">$0.00</strong><span>/hr</span>
+            <p class="primary-support" id="primary-support" hidden></p>
+            <p class="result-warning" id="result-warning" hidden></p>
           </div>
-          <div class="metric">
-            <span>Recommended monthly revenue</span>
-            <strong id="monthly-revenue">$0</strong>
-            <small>At the recommended rate</small>
+          <div class="verdict-card" id="verdict-card"><p id="verdict-title">Set a target rate</p><span id="verdict-copy">Add a target rate to compare this project.</span></div>
+          <div class="secondary-results project-results">
+            <div class="metric"><span>Estimated take-home</span><strong id="take-home">$0</strong><small>After fees, expenses, and tax</small></div>
+            <div class="metric"><span>Difference from target</span><strong id="target-difference">—</strong><small id="comparison-copy">Set a target to compare</small></div>
           </div>
-        </div>
-
-        <div class="formula">
-          <p class="formula-title">How your minimum is calculated</p>
-          <p><span>Income grossed up for tax</span><strong id="income-gross-up">$0</strong></p>
-          <p><span>+ Deductible expenses</span><strong id="expense-total">$0</strong></p>
-          <p><span>= Minimum annual revenue</span><strong id="revenue-needed">$0</strong></p>
-          <p><span>÷ Billable hours</span><strong id="formula-hours">0 hrs</strong></p>
-          <p class="formula-total"><span>Minimum rate</span><strong id="formula-rate">$0/hr</strong></p>
-          <p class="formula-explanation">Taxes are estimated on profit: revenue after deductible expenses. The minimum rate covers your inputs; the recommended rate adds the adjustable buffer above it.</p>
-        </div>
+          <div class="formula project-breakdown">
+            <p class="formula-title">Project breakdown</p>
+            <p><span>Platform / payment fees</span><strong id="fee-dollars">$0</strong></p>
+            <p><span>Project expenses</span><strong id="expense-total">$0</strong></p>
+            <p><span>Estimated taxes</span><strong id="tax-dollars">$0</strong></p>
+            <p><span>Target hourly rate</span><strong id="target-display">$0/hr</strong></p>
+            <p class="formula-total"><span>Price needed to hit target</span><strong id="required-payment">$0</strong></p>
+            <p class="formula-explanation" id="required-payment-note">This is the gross project price needed to reach your target after fees, expenses, and estimated taxes.</p>
+          </div>
         </div>
       </aside>
     </section>
 
-    <section class="guide" aria-labelledby="guide-title">
-      <div>
-        <p class="step">03 / Make it work</p>
-        <h2 id="guide-title">A rate is more than a number.</h2>
-      </div>
-      <div class="guide-items">
-        <article><span>01</span><h3>Minimum means sustainable</h3><p>Your minimum rate is the break-even hourly rate needed to cover your income goal, estimated tax, and deductible business costs.</p></article>
-        <article><span>02</span><h3>Buffer means flexibility</h3><p>Your recommended rate layers a chosen cushion on top of the minimum for lean months, unpaid work, and reinvestment.</p></article>
-        <article><span>03</span><h3>Use this as a planning tool</h3><p>Tax treatment varies by location and business structure. Revisit the inputs with a qualified tax professional as your work changes.</p></article>
+    <section class="scenario-section" aria-labelledby="scenario-title">
+      <div><p class="step">03 / Scope creep check</p><h2 id="scenario-title">What if the project takes longer?</h2><p>Same payment, more time. See how a longer project changes what you effectively earn.</p></div>
+      <div class="scenario-grid" aria-live="polite">
+        <article><span>+10% time</span><strong id="scenario-10">—</strong><small id="scenario-10-note">effective hourly rate</small></article>
+        <article><span>+25% time</span><strong id="scenario-25">—</strong><small id="scenario-25-note">effective hourly rate</small></article>
+        <article><span>+50% time</span><strong id="scenario-50">—</strong><small id="scenario-50-note">effective hourly rate</small></article>
       </div>
     </section>
+
+    <section class="guide" aria-labelledby="guide-title">
+      <div><p class="step">04 / The real rate</p><h2 id="guide-title">Why your quoted rate isn’t your real rate.</h2></div>
+      <div class="guide-items">
+        <article><span>01</span><h3>Time has a wider edge</h3><p>Meetings, messages, revisions, and handoff work all lower the amount you actually earn per hour.</p></article>
+        <article><span>02</span><h3>Costs come out first</h3><p>Platform fees, payment processing, travel, tools, and project materials reduce the revenue you get to keep.</p></article>
+        <article><span>03</span><h3>Use your own benchmark</h3><p>GigWorth compares the project to your personal target rate—a planning aid, not a verdict on the work itself.</p></article>
+      </div>
+    </section>
+    <p class="disclaimer">GigWorth provides planning estimates only and is not tax, legal, accounting, or financial advice.</p>
   </main>
   <script src="script.js"></script>
 </body>
