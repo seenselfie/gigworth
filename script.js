@@ -70,12 +70,50 @@ const GigWorthCore = (() => {
   return { calculate, validate };
 })();
 
-if (typeof module !== 'undefined') module.exports = GigWorthCore;
+const GigWorthAnalytics = (() => {
+  function createTracker(send) {
+    let started = false;
+    let previousResultState = 'none';
+    let previouslyMetTarget = false;
+    const safeSend = (eventName, parameters) => { try { send(eventName, parameters); } catch { /* Analytics must never affect the calculator. */ } };
+    const resultParameters = (result, resultState) => ({ result_state: resultState, total_hours: result.totalHours, effective_rate: result.effectiveRate, target_rate: result.values.targetRate });
+    const resultStateFor = (result) => (result.ok ? (result.takeHome > 0 ? 'profitable' : result.takeHome < 0 ? 'loss' : 'break_even') : 'invalid');
+    const meetsTargetFor = (result) => Boolean(result.ok && result.values.targetRate > 0 && result.effectiveRate >= result.values.targetRate);
+    return {
+      start() {
+        if (started) return;
+        started = true;
+        safeSend('gigworth_started', { result_state: 'calculator_started' });
+      },
+      reset() { safeSend('gigworth_reset', { result_state: 'example_values_restored' }); },
+      prime(result) {
+        previousResultState = resultStateFor(result);
+        previouslyMetTarget = meetsTargetFor(result);
+      },
+      result(result) {
+        if (!started) return;
+        const resultState = resultStateFor(result);
+        if (resultState === 'profitable' && previousResultState !== 'profitable') safeSend('gigworth_project_profitable', resultParameters(result, resultState));
+        if (resultState === 'loss' && previousResultState !== 'loss') safeSend('gigworth_project_loss', resultParameters(result, resultState));
+        const meetsTarget = meetsTargetFor(result);
+        if (meetsTarget && !previouslyMetTarget) safeSend('gigworth_target_met', resultParameters(result, resultState));
+        previousResultState = resultState;
+        previouslyMetTarget = meetsTarget;
+      }
+    };
+  }
+  return { createTracker };
+})();
+
+if (typeof module !== 'undefined') module.exports = { ...GigWorthCore, createAnalyticsTracker: GigWorthAnalytics.createTracker };
 
 if (typeof document !== 'undefined') {
   const fields = { payment: document.querySelector('#payment'), mainHours: document.querySelector('#main-hours'), adminHours: document.querySelector('#admin-hours'), revisionHours: document.querySelector('#revision-hours'), feeRate: document.querySelector('#fee-rate'), expenses: document.querySelector('#expenses'), taxRate: document.querySelector('#tax-rate'), targetRate: document.querySelector('#target-rate') };
   const defaults = { payment: 1000, mainHours: 10, adminHours: 2, revisionHours: 3, feeRate: 3, expenses: 50, taxRate: 25, targetRate: 40 };
   const output = (id) => document.querySelector(id);
+  const analytics = GigWorthAnalytics.createTracker((eventName, parameters) => {
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') window.gtag('event', eventName, parameters);
+  });
   const money = (value, rate = false) => { if (!Number.isFinite(value)) return '—'; if (Math.abs(value) > 0 && Math.abs(value) < 1) return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumSignificantDigits: 6 }).format(value); return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: rate ? 2 : 0, maximumFractionDigits: 2 }).format(value); };
   const signedMoney = (value) => `${value >= 0 ? '+' : '−'}${money(Math.abs(value))}`;
   const clear = (message) => { ['#effective-rate','#take-home','#target-difference','#fee-dollars','#expense-total','#tax-dollars','#target-display','#required-payment','#scenario-10','#scenario-25','#scenario-50'].forEach((id) => { output(id).textContent = '—'; }); ['#scenario-10-note','#scenario-25-note','#scenario-50-note'].forEach((id) => { output(id).textContent = 'Fix inputs to calculate'; }); output('.primary-result').classList.remove('loss'); output('#primary-label').textContent = 'Your real hourly rate'; output('.primary-result > span').textContent = '/hr'; output('#primary-support').hidden = true; output('#comparison-copy').textContent = 'Fix inputs to compare'; output('#required-payment-note').textContent = message; output('#result-warning').hidden = false; output('#result-warning').textContent = message; output('#verdict-card').className = 'verdict-card neutral'; output('#verdict-title').textContent = 'Check the project details'; output('#verdict-copy').textContent = message; };
@@ -107,8 +145,14 @@ if (typeof document !== 'undefined') {
     output('#verdict-card').className = `verdict-card ${result.verdict.type}`; output('#verdict-title').textContent = result.verdict.title; output('#verdict-copy').textContent = result.verdict.copy;
     output('#result-warning').hidden = result.warnings.length === 0; output('#result-warning').textContent = result.warnings.join(' ');
   }
-  const update = () => render(GigWorthCore.calculate(Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value]))));
-  Object.values(fields).forEach((field) => field.addEventListener('input', update));
-  output('#reset').addEventListener('click', () => { Object.entries(defaults).forEach(([key, value]) => { fields[key].value = value; }); update(); });
-  update();
+  const update = (trackResult = false) => {
+    const result = GigWorthCore.calculate(Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value])));
+    render(result);
+    if (trackResult) analytics.result(result);
+  };
+  Object.values(fields).forEach((field) => field.addEventListener('input', () => { analytics.start(); update(true); }));
+  output('#reset').addEventListener('click', () => { analytics.reset(); Object.entries(defaults).forEach(([key, value]) => { fields[key].value = value; }); const result = GigWorthCore.calculate(Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value]))); render(result); analytics.prime(result); });
+  const initialResult = GigWorthCore.calculate(Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value])));
+  render(initialResult);
+  analytics.prime(initialResult);
 }
