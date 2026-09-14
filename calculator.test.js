@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
-const { calculate } = require('./script.js');
+const { calculate, createAnalyticsTracker } = require('./script.js');
 const base = { payment: 1000, mainHours: 10, adminHours: 2, revisionHours: 3, feeRate: 3, expenses: 50, taxRate: 25, targetRate: 40 };
 const invalid = (changes, field) => { const result = calculate({ ...base, ...changes }); assert.equal(result.ok, false); assert.ok(result.issues[field]); };
 
@@ -38,4 +38,26 @@ test('loss scenarios with a zero target retain total loss without a comparison d
   const result = calculate({ ...base, payment: 100, mainHours: 10, adminHours: 0, revisionHours: 0, feeRate: 0, expenses: 200, targetRate: 0 });
   assert.equal(result.takeHome, -100); assert.equal(result.comparison, null);
   result.scenarios.forEach((scenario) => { assert.equal(scenario.shortfall, -100); assert.ok(Number.isFinite(scenario.hours)); });
+});
+test('analytics only emits meaningful result transitions after the calculator starts', () => {
+  const events = [];
+  const tracker = createAnalyticsTracker((name, parameters) => events.push({ name, parameters }));
+  const profitable = calculate(base);
+  const loss = calculate({ ...base, payment: 100, expenses: 200 });
+  tracker.prime(profitable); tracker.result(profitable);
+  assert.equal(events.length, 0);
+  tracker.start(); tracker.start();
+  tracker.result(profitable); tracker.result(profitable);
+  tracker.result(loss); tracker.result(loss);
+  tracker.result(profitable);
+  const names = events.map(({ name }) => name);
+  assert.deepEqual(names, ['gigworth_started', 'gigworth_project_loss', 'gigworth_project_profitable', 'gigworth_target_met']);
+  assert.equal(events[1].parameters.result_state, 'loss');
+  assert.equal(events[2].parameters.result_state, 'profitable');
+});
+test('analytics records every reset without requiring an available gtag function', () => {
+  const events = [];
+  const tracker = createAnalyticsTracker((name, parameters) => events.push({ name, parameters }));
+  tracker.reset(); tracker.reset();
+  assert.deepEqual(events.map(({ name }) => name), ['gigworth_reset', 'gigworth_reset']);
 });
